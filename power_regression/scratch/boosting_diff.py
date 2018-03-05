@@ -1,3 +1,4 @@
+import os
 import glob
 
 import pandas as pd
@@ -13,11 +14,14 @@ from skcycling.extraction import gradient_heart_rate
 
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import QuantileTransformer
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import StandardScaler
+# from sklearn.ensemble import GradientBoostingRegressor
+from xgboost import XGBRegressor as GradientBoostingRegressor
 from sklearn.model_selection import GroupKFold
 from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_val_predict
 
-path_data = '/home/lemaitre/Documents/data/cycling/user_2/*/*.fit'
+path_data = '/home/glemaitre/Documents/data/cycling/user_*/*/*.fit'
 filenames = sorted(glob.glob(path_data))
 memory = Memory(location='../notebook/bikereadcache')
 bikeread_cached = memory.cache(bikeread, verbose=1)
@@ -43,26 +47,36 @@ for activity_idx in range(len(data)):
     fields = ['elevation', 'cadence', 'heart-rate', 'speed',
               'gradient-elevation', 'gradient-heart-rate', 'acceleration']
     data[activity_idx] = gradient_activity(data[activity_idx],
-                                           periods=range(1, 11),
+                                           periods=range(1, 6),
                                            columns=fields)
 
 for activity in data:
     activity.replace([np.inf, -np.inf], np.nan, inplace=True)
-    activity.fillna(activity.mean(), inplace=True)
 
 data_concat = pd.concat(data)
 y = data_concat['original']['power']
 X = data_concat.drop('power', axis=1, level=1)
+X.fillna(X.mean(), inplace=True)
 groups = []
 for group_idx, activity in enumerate(data):
     groups += [group_idx] * activity.shape[0]
 groups = np.array(groups)
 
-pipe = make_pipeline(QuantileTransformer(),
-                     GradientBoostingRegressor(random_state=42))
-scores = cross_validate(pipe, X, y, groups=groups,
+pipe = make_pipeline(StandardScaler(),
+                     GradientBoostingRegressor(random_state=42, n_jobs=-1))
+scores = cross_validate(pipe,
+                        X, y, groups=groups,
                         scoring=['r2', 'neg_median_absolute_error'],
-                        cv=GroupKFold(n_splits=3), n_jobs=-1,
-                        return_train_score=True)
+                        cv=GroupKFold(n_splits=3), n_jobs=1,
+                        return_train_score=True,
+                        verbose=0)
 
-print(score)
+print(scores)
+
+y_pred = cross_val_predict(pipe, X, y, groups=groups,
+                           cv=GroupKFold(n_splits=3), n_jobs=1)
+
+path_results = ('/home/glemaitre/Documents/work/code/cycling/research/'
+                'power_regression/results')
+np.save(os.path.join(path_results, 'y_pred_boosting.npy'), y_pred)
+np.save(os.path.join(path_results, 'y_true_boosting.npy'), y.values)

@@ -12,11 +12,12 @@ from skcycling.extraction import gradient_heart_rate
 
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import QuantileTransformer
-from sklearn.ensemble import GradientBoostingRegressor
+# from sklearn.ensemble import GradientBoostingRegressor
+from xgboost import XGBRegressor as GradientBoostingRegressor
 from sklearn.model_selection import GroupKFold
 from sklearn.model_selection import cross_validate
 
-path_data = '/home/lemaitre/Documents/data/cycling/user_2/*/*.fit'
+path_data = '/home/glemaitre/Documents/data/cycling/user_2/*/*.fit'
 filenames = sorted(glob.glob(path_data))
 memory = Memory(location='../notebook/bikereadcache')
 bikeread_cached = memory.cache(bikeread, verbose=1)
@@ -41,20 +42,20 @@ for activity_idx in range(len(data)):
 
 for activity in data:
     activity.replace([np.inf, -np.inf], np.nan, inplace=True)
-    activity.fillna(activity.mean(), inplace=True)
 
 data_concat = pd.concat(data)
 y = data_concat['power']
 X = data_concat.drop('power', axis=1)
+X.fillna(X.mean(), inplace=True)
 groups = []
 for group_idx, activity in enumerate(data):
     groups += [group_idx] * activity.shape[0]
 groups = np.array(groups)
 
 pipe = make_pipeline(QuantileTransformer(),
-                     GradientBoostingRegressor(random_state=42))
+                     GradientBoostingRegressor(random_state=42, n_jobs=-1))
 scores = cross_validate(pipe, X, y, groups=groups,
                         scoring=['r2', 'neg_median_absolute_error'],
-                        cv=GroupKFold(n_splits=3), n_jobs=-1,
+                        cv=GroupKFold(n_splits=3), n_jobs=1,
                         return_train_score=True)
 print(scores)
