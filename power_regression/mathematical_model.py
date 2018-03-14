@@ -69,12 +69,17 @@ for idx, filename in enumerate(valid_filenames):
 
 y_pred = np.zeros_like(y.values)
 for idx_activity in range(len(valid_filenames)):
-    mask = groups == idx
+    mask = groups == idx_activity
     y_pred[mask] = strava_power_model(X.iloc[mask, :],
                                       np.unique(weight_groups[mask])).values
 
 # Store the prediction for visualization
 path_results = ('/home/glemaitre/Documents/work/code/cycling/research/'
                 'power_regression/results')
-np.save(os.path.join(path_results, 'y_pred_physics.npy'), y_pred)
-np.save(os.path.join(path_results, 'y_true_physics.npy'), y.values)
+f = os.path.join(path_results, 'y_pred_physics.csv')
+pd.Series(y_pred, index=y.index).to_csv(f)
+f = os.path.join(path_results, 'y_true_physics.csv')
+y.to_csv(f)
+np.save(os.path.join(path_results, 'groups_physics.npy'), groups)
+f = os.path.join(path_results, 'altitude.csv')
+X['elevation'].to_csv(f)

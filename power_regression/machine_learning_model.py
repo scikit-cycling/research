@@ -96,5 +96,8 @@ y_pred = cross_val_predict(pipe, X, y, groups=groups,
 
 path_results = ('/home/glemaitre/Documents/work/code/cycling/research/'
                 'power_regression/results')
-np.save(os.path.join(path_results, 'y_pred_boosting.npy'), y_pred)
-np.save(os.path.join(path_results, 'y_true_boosting.npy'), y.values)
+f = os.path.join(path_results, 'y_pred_boosting.csv')
+pd.Series(y_pred, index=y.index).to_csv(f)
+f = os.path.join(path_results, 'y_true_boosting.csv')
+y.to_csv(f)
+np.save(os.path.join(path_results, 'groups_boosting.npy'), groups)
