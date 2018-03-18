@@ -2,6 +2,8 @@
 
 G. Lemaitre and C. Lemaitre
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1202440.svg)](https://doi.org/10.5281/zenodo.1202440)
+
 ## Abstract
 
 You can find the abstract linked to the experiments in the `abstract.pdf`. It

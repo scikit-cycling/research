@@ -26,11 +26,11 @@ from xgboost import XGBRegressor as GradientBoostingRegressor
 # 2. Remove the files which do not contain all required information
 
 # cache the reading if we need to execute the script again
-memory = Memory(location='../notebook/bikereadcache')
+memory = Memory(location='../cache/bikereadcache')
 bikeread_cached = memory.cache(bikeread, verbose=1)
 
 # read the data
-path_data = '/home/glemaitre/Documents/data/cycling/user_*/*/*.fit'
+path_data = '/home/glemaitre/Documents/data/user_*/*/*.fit'
 filenames = sorted(glob.glob(path_data))
 data = Parallel(n_jobs=-1)(delayed(bikeread_cached)(f) for f in filenames)
 
@@ -93,11 +93,9 @@ print(scores)
 # Store the prediction for visualization
 y_pred = cross_val_predict(pipe, X, y, groups=groups,
                            cv=GroupKFold(n_splits=3), n_jobs=1)
-
-path_results = ('/home/glemaitre/Documents/work/code/cycling/research/'
-                'power_regression/results')
-f = os.path.join(path_results, 'y_pred_boosting.csv')
+path_results = os.path.join('results', 'machine_learning_model')
+f = os.path.join(path_results, 'y_pred.csv')
 pd.Series(y_pred, index=y.index).to_csv(f)
-f = os.path.join(path_results, 'y_true_boosting.csv')
+f = os.path.join(path_results, 'y_true.csv')
 y.to_csv(f)
-np.save(os.path.join(path_results, 'groups_boosting.npy'), groups)
+np.save(os.path.join(path_results, 'groups.npy'), groups)
