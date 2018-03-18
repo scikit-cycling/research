@@ -14,8 +14,7 @@ has been submitted to the Science & Cycling conference.
 ### Requirements
 
 To run the script, you need to install
-[`scikit-cycling`](https://github.com/scikit-cycling/scikit-cycling) and modify
-to fetch the data from your local storage.
+[`scikit-cycling`](https://github.com/scikit-cycling/scikit-cycling).
 
 ### Description
 
@@ -25,3 +24,14 @@ Two python files are available in this repository:
   paper. We learn a gradient boosting regressor using heterogeneous data.
 * `mathematical_model.py`: This is the model used as comparison to the machine
   learning model.
+
+### Reproduce the experiments
+
+``` bash
+# Download the data
+python download_data.py
+
+# Run the two different models
+python machine_learning_model.py
+python mathematical_model.py
+```
