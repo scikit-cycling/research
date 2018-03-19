@@ -17,7 +17,7 @@ from skcycling.model import strava_power_model
 # 2. Remove the files which do not contain all required information
 
 # cache the reading if we need to execute the script again
-memory = Memory(location=os.path.join('cache', 'bikereadcache'))
+memory = Memory(cachedir=os.path.join('cache', 'bikereadcache'))
 bikeread_cached = memory.cache(bikeread, verbose=1)
 
 # read the data
