@@ -75,6 +75,8 @@ for idx_activity in range(len(valid_filenames)):
 
 # Store the prediction for visualization
 path_results = os.path.join('results', 'mathematical_model')
+if not os.path.exists(path_results):
+    os.makedirs(path_results)
 f = os.path.join(path_results, 'y_pred.csv')
 pd.Series(y_pred, index=y.index).to_csv(f)
 f = os.path.join(path_results, 'y_true.csv')

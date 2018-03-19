@@ -12,8 +12,6 @@ from skcycling.extraction import gradient_activity
 from skcycling.extraction import gradient_elevation
 from skcycling.extraction import gradient_heart_rate
 
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GroupKFold
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import cross_val_predict
@@ -47,7 +45,7 @@ data = valid_data
 # Data processing
 # 1. Compute extra information: acceleration, gradient for elevation and
 # heart-rate. and compute gradient over 5 seconds.
-# 2. Use a standard scaler and a gradient boosting as estimator.
+# 2. Use a gradient boosting as estimator.
 # 3. Make a cross-validation to obtain true estimate of the score.
 # 4. Repeat the experiment to get the prediction for visualization purpose.
 
@@ -77,9 +75,7 @@ for group_idx, activity in enumerate(data):
     groups += [group_idx] * activity.shape[0]
 groups = np.array(groups)
 
-pipe = make_pipeline(StandardScaler(),
-                     GradientBoostingRegressor(random_state=42, n_jobs=-1))
-scores = cross_validate(pipe,
+scores = cross_validate(GradientBoostingRegressor(random_state=42, n_jobs=-1),
                         X, y, groups=groups,
                         scoring=['r2', 'neg_median_absolute_error'],
                         cv=GroupKFold(n_splits=3), n_jobs=1,
@@ -91,9 +87,13 @@ print('The obtained scores on training and testing in terms of '
 print(scores)
 
 # Store the prediction for visualization
-y_pred = cross_val_predict(pipe, X, y, groups=groups,
-                           cv=GroupKFold(n_splits=3), n_jobs=1)
+y_pred = cross_val_predict(
+    GradientBoostingRegressor(random_state=42, n_jobs=-1),
+    X, y, groups=groups,
+    cv=GroupKFold(n_splits=3), n_jobs=1)
 path_results = os.path.join('results', 'machine_learning_model')
+if not os.path.exists(path_results):
+    os.makedirs(path_results)
 f = os.path.join(path_results, 'y_pred.csv')
 pd.Series(y_pred, index=y.index).to_csv(f)
 f = os.path.join(path_results, 'y_true.csv')

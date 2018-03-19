@@ -13,8 +13,28 @@ has been submitted to the Science & Cycling conference.
 
 ### Requirements
 
-To run the script, you need to install
-[`scikit-cycling`](https://github.com/scikit-cycling/scikit-cycling).
+To run the scripts, you need have install the following packages.
+
+* numpy
+* pandas
+* scikit-learn
+* scikit-cycling
+* xgboost
+* joblib
+* jupyter
+
+All those packages are available on PyPi:
+
+``` bash
+pip install numpy pandas scikit-learn scikit-cycling xgboost joblib jupyter
+```
+
+We would recommend to use conda with conda-forge:
+
+``` bash
+conda config --add channels conda-forge
+conda install --yes numpy pandas scikit-learn scikit-cycling xgboost joblib jupyter
+```
 
 ### Description
 
@@ -35,3 +55,7 @@ python download_data.py
 python machine_learning_model.py
 python mathematical_model.py
 ```
+
+The results will be stored in the folders `results`. To introspect the
+results, you can execute the `results_visualization.ipynb` by executing
+`jupyter notebook`.
