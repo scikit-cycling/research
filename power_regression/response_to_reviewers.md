@@ -72,11 +72,11 @@ not incorporate the frictional loss of the drive chain.
 
 Regarding the kinetic change, this term is not always included [3] in the
 model. However, we included this term in some preliminary experiments which
-turn out to be significantly detrimental to predict power. The overall results
-including the kinetic term are R2=-0.55 / MAE=61.09 W while excluding the
-kinetic term the results are R2=-0.26 / MAE=55.19 W. Note that this experiment
-can be reproduced by setting `use_acceleration=True` in `strava_power_model`
-function in our code (refer to
+turn out to be detrimental to predict power. The overall results including the
+kinetic term are R2=-0.45 / MAE=57.43 W while excluding the kinetic term the
+results are R2=-0.26 / MAE=55.19 W. Note that this experiment can be reproduced
+by setting `use_acceleration=True` in `strava_power_model` function in our code
+(refer to
 https://github.com/scikit-cycling/research/blob/master/power_regression/mathematical_model.py#L73).
 We did not include these experiments due to page limitation. However, we are
 inclined to include this extra experiment if the page limit is lift up.

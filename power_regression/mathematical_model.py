@@ -71,7 +71,8 @@ y_pred = np.zeros_like(y.values)
 for idx_activity in range(len(valid_filenames)):
     mask = groups == idx_activity
     y_pred[mask] = strava_power_model(X.iloc[mask, :],
-                                      np.unique(weight_groups[mask])).values
+                                      np.unique(weight_groups[mask]),
+                                      use_acceleration=True).values
 
 # Store the prediction for visualization
 path_results = os.path.join('results', 'mathematical_model')
